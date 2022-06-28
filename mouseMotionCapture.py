@@ -30,10 +30,9 @@ while cap.isOpened():
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
         
-        if cv2.contourArea(contour) < 150:
+        if cv2.contourArea(contour) < 130:
             continue
-        cv2.rectangle(frame1, (x, y), (x+w, y+h), (200, 255, 0), 2)
-    
+        cv2.rectangle(frame1, (x, y), (x+w, y+h), (0, 255, 0), 2)
     
     out.write(frame1)
     cv2.imshow("feed", frame1)
