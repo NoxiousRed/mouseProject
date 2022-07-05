@@ -7,7 +7,7 @@ cap = cv2.VideoCapture('MouseMovies\Mouse Movie 5.avi')
 #be changed by changing the format file after the dot in the below line of code
 filename = 'mouseMovement.avi'
 
-#ret is a boolean value that returns true if the frame is available
+#ret is a boolean value that returns true if the frame is available (feed is open)
 ret, frame1 = cap.read()
 ret, frame2 = cap.read()
 
@@ -39,7 +39,7 @@ while cap.isOpened():
     frame1 = frame2
     ret, frame2 = cap.read()
     
-    #If the video has ended
+    #If the video has ended, close the feed
     if frame2 is None or frame1 is None:
         break
     
