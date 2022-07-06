@@ -1,19 +1,20 @@
 import cv2
 
 #The video file is set to the variable 'cap', we can then manipulate it further
-cap = cv2.VideoCapture('MouseMovies\Mouse Movie 5.avi')
+cap = cv2.VideoCapture('MouseMovies\playFile\MOV9BA.mp4')
 
 #The output file's name, worth noting it will output to an avi file, this can
 #be changed by changing the format file after the dot in the below line of code
-filename = 'mouseMovement.avi'
+filename = 'mouseMovement.mkv'
 
 #ret is a boolean value that returns true if the frame is available (feed is open)
 ret, frame1 = cap.read()
 ret, frame2 = cap.read()
 
-
+#Framerate of videos is 30.00, any more or less and it will speed up or slow
+#down the output video respectively.
 fourcc = cv2.VideoWriter_fourcc(*'XVID')  
-out = cv2.VideoWriter(filename, fourcc, 60.00, (1920, 1080))
+out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
 
 #While the video is playing in the feed, do the following:
 #If the program finds a difference between frame1 and frame2, it will draw a
@@ -44,7 +45,7 @@ while cap.isOpened():
         break
     
     #If the ` key is pressed while the video is playing, it will write out the file and kill the video feed.
-    if cv2.waitKey(1) & 0xFF == ord('`'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):
           break
         
 cap.release()
