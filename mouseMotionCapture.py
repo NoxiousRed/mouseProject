@@ -1,14 +1,4 @@
 import cv2
-import time
-
-#simple countdown timer, trying to use in 1 minute tolerance testing.
-#def countdown(time_sec):
-    #while time_sec:
-        #mins, secs = divmod(time_sec, 60)
-        #timeformat = '{:02d}:{:02d}'.format(mins, secs)
-        #print(timeformat, end='\r')
-        #time.sleep(1)
-        #time_sec -= 1
 
 #The video file is set to the variable 'cap', we can then manipulate it further
 cap = cv2.VideoCapture('MouseMovies\playFile\MOV9BA.mp4')
@@ -26,9 +16,6 @@ ret, frame2 = cap.read()
 fourcc = cv2.VideoWriter_fourcc(*'XVID')  
 out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
 
-#This will be used to count the seconds since a contour was drawn.
-time_sec = 10
-
 #While the video is playing in the feed, do the following:
 #If the program finds a difference between frame1 and frame2, it will draw a
 #contour around where the difference is detected, making a "Motion detection"
@@ -40,7 +27,7 @@ while cap.isOpened():
     _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
     dilated = cv2.dilate(thresh, None, iterations=3)
     contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    
+
 #Draws rectangles around the movement
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
@@ -49,6 +36,7 @@ while cap.isOpened():
 #smaller changes being recognized as movement. Larger number results in
 #more movement required to be recognized.
         if cv2.contourArea(contour) < 130:
+            #putting write here only writes when contours are present!
             continue
         cv2.rectangle(frame1, (x, y), (x+w, y+h), (0, 255, 0), 2)
 #put timer logic in here?
