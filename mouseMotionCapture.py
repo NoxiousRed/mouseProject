@@ -19,7 +19,7 @@ fourcc = cv2.VideoWriter_fourcc(*'XVID')
 out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
 
 #initialize a contour counter for finding number of frames mouse on screen
-#contourCount = 0
+contourCount = 0
 
 #While the video is playing in the feed, do the following:
 #If the program finds a difference between frame1 and frame2, it will draw a
@@ -50,12 +50,14 @@ while cap.isOpened():
                             font, 1,
                             (255, 0, 0),
                             4, cv2.LINE_8)
-
+        
+    if len(contours) > 0:
+        contourCount += 1
+        
+    
 #Draws rectangles around the movement
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
-        out.write(frame1)
-        #contourCount += 1
         
 #This line controls the accuracy of the contours, a smaller number results in
 #smaller changes being recognized as movement. Larger number results in
@@ -74,7 +76,7 @@ while cap.isOpened():
 
 
 #working iteration
-    #out.write(frame1)
+    out.write(frame1)
     cv2.imshow("feed", frame1)
     frame1 = frame2
     ret, frame2 = cap.read()
@@ -88,8 +90,9 @@ while cap.isOpened():
           break
 #logic to count number of frames in video, count number of contours, and divide
 #to find percentage of time mouse is on screen.
-#length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-#print( "The percent of time there is a mouse on screen is " + str(float((contourCount / length) * 100)))
+length = (float(cap.get(cv2.CAP_PROP_FRAME_COUNT))) / 30
+contourCount = contourCount / 30
+print( "The number of seconds there is a mouse on screen is " + str(float((contourCount / length) * 100)))
 
 cap.release()
 out.release()
