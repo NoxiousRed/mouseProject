@@ -1,4 +1,6 @@
 import cv2
+import datetime
+import numpy
 
 #The video file is set to the variable 'cap', we can then manipulate it further
 cap = cv2.VideoCapture('MouseMovies\playFile\MOV9BA.mp4')
@@ -16,6 +18,9 @@ ret, frame2 = cap.read()
 fourcc = cv2.VideoWriter_fourcc(*'XVID')  
 out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
 
+#initialize a contour counter for finding number of frames mouse on screen
+#contourCount = 0
+
 #While the video is playing in the feed, do the following:
 #If the program finds a difference between frame1 and frame2, it will draw a
 #contour around where the difference is detected, making a "Motion detection"
@@ -27,16 +32,36 @@ while cap.isOpened():
     _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
     dilated = cv2.dilate(thresh, None, iterations=3)
     contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    
+    #clock display on screen
+    if ret:
+        # describe the type of
+        # font you want to display
+        font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
+ 
+        # Get date and time and
+        # save it inside a variable
+        dt = str(datetime.datetime.now())
+ 
+        # put the dt variable over the
+        # video frame
+        frame = cv2.putText(frame1, dt,
+                            (10, 100),
+                            font, 1,
+                            (255, 0, 0),
+                            4, cv2.LINE_8)
 
 #Draws rectangles around the movement
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
+        out.write(frame1)
+        #contourCount += 1
         
 #This line controls the accuracy of the contours, a smaller number results in
 #smaller changes being recognized as movement. Larger number results in
 #more movement required to be recognized.
-        if cv2.contourArea(contour) < 130:
-            #putting write here only writes when contours are present!
+        if cv2.contourArea(contour) < 120:
+            #putting out.write here only writes when contours are present!
             continue
         cv2.rectangle(frame1, (x, y), (x+w, y+h), (0, 255, 0), 2)
 #put timer logic in here?
@@ -46,21 +71,10 @@ while cap.isOpened():
 #If contour, start timer and begin capturing all frames, if no contour after
 #1 minute, stop timer, stop capturing frames.
 
-    #while cap.isOpened():
-        #if contours:
-            #while countdown(60):
-                #out.write(frame1)
 
-    #while countdown(60):
-        #out.write(frame1)
-        #cv2.imshow("feed", frame1)
-    
-    #for contour in contours:
-        #if x or y or w or h > 1:
-            #out.write(frame1)
 
 #working iteration
-    out.write(frame1)
+    #out.write(frame1)
     cv2.imshow("feed", frame1)
     frame1 = frame2
     ret, frame2 = cap.read()
@@ -72,7 +86,11 @@ while cap.isOpened():
     #If the ` key is pressed while the video is playing, it will write out the file and kill the video feed.
     if cv2.waitKey(1) & 0xFF == ord('`'):
           break
-        
+#logic to count number of frames in video, count number of contours, and divide
+#to find percentage of time mouse is on screen.
+#length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+#print( "The percent of time there is a mouse on screen is " + str(float((contourCount / length) * 100)))
+
 cap.release()
 out.release()
 cv2.destroyAllWindows()
