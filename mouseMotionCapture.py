@@ -1,6 +1,4 @@
 import cv2
-import datetime
-import numpy
 
 #The video file is set to the variable 'cap', we can then manipulate it further
 cap = cv2.VideoCapture('MouseMovies\playFile\MOV9BA.mp4')
@@ -18,8 +16,11 @@ ret, frame2 = cap.read()
 fourcc = cv2.VideoWriter_fourcc(*'XVID')  
 out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
 
-#initialize a contour counter for finding number of frames mouse on screen
+#initialize a contour counter for finding number of frames mouse is not on screen
 contourCount = 0
+
+#initialize a counter for setting to a certain number of frames since last contour
+timerCount = 0
 
 #While the video is playing in the feed, do the following:
 #If the program finds a difference between frame1 and frame2, it will draw a
@@ -34,23 +35,35 @@ while cap.isOpened():
     contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     #clock display on screen
-    if ret:
+    #if ret:
         # describe the type of
         # font you want to display
-        font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
+        #font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
  
         # Get date and time and
         # save it inside a variable
-        dt = str(datetime.datetime.now())
+        #dt = str(datetime.datetime.now())
  
         # put the dt variable over the
         # video frame
-        frame = cv2.putText(frame1, dt,
-                            (10, 100),
-                            font, 1,
-                            (255, 0, 0),
-                            4, cv2.LINE_8)
-        
+        #frame = cv2.putText(frame1, dt,
+                            #(10, 100),
+                            #font, 1,
+                            #(255, 0, 0),
+                            #4, cv2.LINE_8)
+
+#this is a block attempting to find all of the moments of movement and all of
+#the movement within 100 frames of the first detected contour.    
+    for contour in contours:        
+        if len(contours) > 0:
+            timerCount = 100
+            out.write(frame1)
+        elif len(contours) > 0 or timerCount > 0:
+            out.write(frame1)
+            timerCount -= 1
+        elif len(contours) == 0 and timerCount < 0:
+            continue
+    
     if len(contours) > 0:
         contourCount += 1
         
@@ -76,7 +89,7 @@ while cap.isOpened():
 
 
 #working iteration
-    out.write(frame1)
+    #out.write(frame1)
     cv2.imshow("feed", frame1)
     frame1 = frame2
     ret, frame2 = cap.read()
@@ -88,11 +101,10 @@ while cap.isOpened():
     #If the ` key is pressed while the video is playing, it will write out the file and kill the video feed.
     if cv2.waitKey(1) & 0xFF == ord('`'):
           break
-#logic to count number of frames in video, count number of contours, and divide
-#to find percentage of time mouse is on screen.
-length = (float(cap.get(cv2.CAP_PROP_FRAME_COUNT))) / 30
+      
+#Logic that finds the number of seconds a mouse is on screen and displays it
 contourCount = contourCount / 30
-print( "The number of seconds there is a mouse on screen is " + str(float((contourCount / length) * 100)))
+print( "The number of seconds there is a moving mouse on screen is " + str(contourCount) + " seconds")
 
 cap.release()
 out.release()
