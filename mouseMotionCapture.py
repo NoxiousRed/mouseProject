@@ -1,4 +1,5 @@
 import cv2
+import datetime
 
 #The video file is set to the variable 'cap', we can then manipulate it further
 cap = cv2.VideoCapture('MouseMovies\playFile\MOV9BA.mp4')
@@ -35,22 +36,22 @@ while cap.isOpened():
     contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     #clock display on screen
-    #if ret:
+    if ret:
         # describe the type of
         # font you want to display
-        #font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
+        font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
  
         # Get date and time and
         # save it inside a variable
-        #dt = str(datetime.datetime.now())
+        dt = str(datetime.datetime.now())
  
         # put the dt variable over the
         # video frame
-        #frame = cv2.putText(frame1, dt,
-                            #(10, 100),
-                            #font, 1,
-                            #(255, 0, 0),
-                            #4, cv2.LINE_8)
+        frame = cv2.putText(frame1, dt,
+                            (10, 100),
+                            font, 1,
+                            (255, 0, 0),
+                            4, cv2.LINE_8)
 
 #this is a block attempting to find all of the moments of movement and all of
 #the movement within 100 frames of the first detected contour.    
@@ -58,12 +59,13 @@ while cap.isOpened():
         if len(contours) > 0:
             timerCount = 100
             out.write(frame1)
-        elif len(contours) > 0 or timerCount > 0:
+        elif len(contours) > 0:
             out.write(frame1)
             timerCount -= 1
         elif len(contours) == 0 and timerCount < 0:
             continue
     
+#if statement to calculate total moving time of mice on screen
     if len(contours) > 0:
         contourCount += 1
         
