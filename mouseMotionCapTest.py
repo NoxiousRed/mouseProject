@@ -17,7 +17,7 @@ fourcc = cv2.VideoWriter_fourcc(*'XVID')
 out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
 
 #initialize a contour counter for finding number of frames mouse is not on screen
-#contourCount = 0
+contourCount = 0
 
 #ret is a boolean value that returns true if the frame is available (feed is open)
 #While the video is playing in the feed, do the following:
@@ -26,21 +26,22 @@ out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
 while cap.isOpened:
     ret, frame = cap.read()
     
-    # Object detection
-    mask = object_detector.apply(frame)
-    _, mask = cv2.threshold(mask, 254, 255, cv2.THRESH_BINARY)
-    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    #if frames are still occuring
+    if ret == True:
+        # Object detection
+        mask = object_detector.apply(frame)
+        _, mask = cv2.threshold(mask, 254, 255, cv2.THRESH_BINARY)
+        contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
-    for cnt in contours:
-        #Calculate area of contours and remove small elements (noise, things we don't want)
-        area = cv2.contourArea(cnt)
-        if area > 120:
-            #cv2.drawContours(frame, [cnt], -1, (0, 255, 0), 2)
-            x, y, w, h = cv2.boundingRect(cnt)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 225, 0), 2 )
-            out.write(frame)
-            
-            #contourCount += 1
+        for cnt in contours:
+            #Calculate area of contours and remove small elements (noise, things we don't want)
+            area = cv2.contourArea(cnt)
+            if area > 120:
+                #cv2.drawContours(frame, [cnt], -1, (0, 255, 0), 2)
+                x, y, w, h = cv2.boundingRect(cnt)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 225, 0), 2 )
+                out.write(frame)
+                contourCount += 1
             
         #clock display on screen
         if ret:
@@ -54,25 +55,30 @@ while cap.isOpened:
      
             # put the dt variable over the
             # video frame
-            frame = cv2.putText(frame, dt, (10, 100), font, 1, (255, 0, 0), 2, cv2.LINE_8)        
-
+            frame = cv2.putText(frame, dt, (10, 100), font, 1, (255, 0, 0), 2, cv2.LINE_8)   
+      
+    #If the video has ended, close the feed        
+    else:
+        break
+    
 #working iteration
     #out.write(frame)
     cv2.imshow("feed", frame)
-    cv2.imshow("Mask", mask)
-    
-    #If the video has ended, close the feed
-    if frame is None:
-        break
+    cv2.imshow("Mask", mask)    
     
     #If the ` key is pressed while the video is playing, it will write out the file and kill the video feed.
     if cv2.waitKey(1) & 0xFF == ord('`'):
         break
       
 #Logic that finds the number of seconds a mouse is on screen and displays it
-#contourCount = contourCount / 30
-#print( "The number of seconds there is a moving mouse on screen is " + str(contourCount) + " seconds")
+frameCount = float(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+secondsCount = float(frameCount / 30)
+contourCount = float(contourCount / 30)
 
+print( "The number of seconds there is a moving mouse on screen is " + str(secondsCount - (secondsCount - contourCount))
+      + " seconds")
+
+#closes the feed and the output video file
 cap.release()
 out.release()
 cv2.destroyAllWindows()
