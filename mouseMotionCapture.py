@@ -34,35 +34,23 @@ while cap.isOpened:
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
         for cnt in contours:
+            #clock display on screen
+            font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
+            dt = str(datetime.datetime.now())
+            frame = cv2.putText(frame, dt, (10, 100), font, 1, (255, 0, 0), 2, cv2.LINE_8)
             #Calculate area of contours and remove small elements (noise, things we don't want)
             area = cv2.contourArea(cnt)
             if area > 120:
-                #cv2.drawContours(frame, [cnt], -1, (0, 255, 0), 2)
                 x, y, w, h = cv2.boundingRect(cnt)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 225, 0), 2 )
                 out.write(frame)
                 contourCount += 1
-            
-        #clock display on screen
-        if ret:
-            # describe the type of
-            # font you want to display
-            font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
-     
-            # Get date and time and
-            # save it inside a variable
-            dt = str(datetime.datetime.now())
-     
-            # put the dt variable over the
-            # video frame
-            frame = cv2.putText(frame, dt, (10, 100), font, 1, (255, 0, 0), 2, cv2.LINE_8)   
-      
+
     #If the video has ended, close the feed        
     else:
         break
     
-#working iteration
-    #out.write(frame)
+    #display the feed and the mask as a pop-out window
     cv2.imshow("feed", frame)
     cv2.imshow("Mask", mask)    
     
@@ -75,8 +63,8 @@ frameCount = float(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 secondsCount = float(frameCount / 30)
 contourCount = float(contourCount / 30)
 
-print( "The number of seconds there is a moving mouse on screen is " + str(secondsCount - (secondsCount - contourCount))
-      + " seconds")
+print( "The number of seconds there is a moving mouse on screen is " + 
+      str(secondsCount - (secondsCount - contourCount)) + " seconds")
 
 #closes the feed and the output video file
 cap.release()
