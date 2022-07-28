@@ -1,12 +1,19 @@
 import cv2
 import datetime
+import moviepy.editor as moviepy
+
+#loads the video to convert with a specified file path
+playMovie = moviepy.VideoFileClip('MouseMovies\playFile\MOV9BA.MOD')
+
+#creates a new video file with the proper format
+playMovie.write_videofile("MOV9BA.mp4")
 
 #The video file is set to the variable 'cap', we can then manipulate it further
-cap = cv2.VideoCapture('MouseMovies\playFile\MOV9BA.mp4')
+cap = cv2.VideoCapture('MOV9BA.mp4')
 
-#The output file's name, worth noting it will output to an avi file, this can
+#The output file's name, worth noting it will output to an mp4 file, this can
 #be changed very simply by changing the format after the period.
-filename = 'mouseMovement.avi'
+filename = 'mouseMovement.mp4'
 
 #object detection from stable camera
 object_detector = cv2.createBackgroundSubtractorMOG2()
@@ -14,7 +21,7 @@ object_detector = cv2.createBackgroundSubtractorMOG2()
 #Framerate of videos is 30.00, any more or less and it will speed up or slow
 #down the output video respectively. Change this value based on camera.
 fourcc = cv2.VideoWriter_fourcc(*'XVID')  
-out = cv2.VideoWriter(filename, fourcc, 30.00, (1920, 1080))
+out = cv2.VideoWriter(filename, fourcc, 29.97, (720, 480))
 
 #initialize a contour counter for finding number of frames mouse is not on screen
 contourCount = 0
@@ -40,9 +47,9 @@ while cap.isOpened:
             frame = cv2.putText(frame, dt, (10, 100), font, 1, (255, 0, 0), 2, cv2.LINE_8)
             #Calculate area of contours and remove small elements (noise, things we don't want)
             area = cv2.contourArea(cnt)
-            if area > 120:
+            if area > 20:
                 x, y, w, h = cv2.boundingRect(cnt)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 225, 0), 2 )
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 225, 0), 1 )
                 out.write(frame)
                 contourCount += 1
 
@@ -55,7 +62,7 @@ while cap.isOpened:
     cv2.imshow("Mask", mask)    
     
     #If the ` key is pressed while the video is playing, it will write out the file and kill the video feed.
-    if cv2.waitKey(1) & 0xFF == ord('`'):
+    if cv2.waitKey(2) & 0xFF == ord('`'):
         break
       
 #Logic that finds the number of seconds a mouse is on screen and displays it
