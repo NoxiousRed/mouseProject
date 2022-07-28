@@ -6,3 +6,4 @@ This program uses OpenCV 4.6.0.66 for motion capture
 
 This program is using Python 3.9.12
 
+This program is using PythonVideoConverter 3.7 for converting files to .MP4
