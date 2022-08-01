@@ -3,13 +3,13 @@ import datetime
 import moviepy.editor as moviepy
 
 #loads the video to convert with a specified file path
-playMovie = moviepy.VideoFileClip('MouseMovies\playFile\MOV9BA.MOD')
+playMovie = moviepy.VideoFileClip('MouseMovies\playFile\MOV9B9.MOD')
 
 #creates a new video file with the proper format
-playMovie.write_videofile("MOV9BA.mp4")
+playMovie.write_videofile("MOV9B9.mp4")
 
 #The video file is set to the variable 'cap', we can then manipulate it further
-cap = cv2.VideoCapture('MOV9BA.mp4')
+cap = cv2.VideoCapture('MOV9B9.mp4')
 
 #The output file's name, worth noting it will output to an mp4 file, this can
 #be changed very simply by changing the format after the period.
@@ -24,7 +24,7 @@ fourcc = cv2.VideoWriter_fourcc(*'XVID')
 out = cv2.VideoWriter(filename, fourcc, 29.97, (720, 480))
 
 #initialize a contour counter for finding number of frames mouse is not on screen
-contourCount = 0
+#contourCount = 0
 
 #ret is a boolean value that returns true if the frame is available (feed is open)
 #While the video is playing in the feed, do the following:
@@ -51,7 +51,7 @@ while cap.isOpened:
                 x, y, w, h = cv2.boundingRect(cnt)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 225, 0), 1 )
                 out.write(frame)
-                contourCount += 1
+                #contourCount += 1
 
     #If the video has ended, close the feed        
     else:
@@ -66,12 +66,12 @@ while cap.isOpened:
         break
       
 #Logic that finds the number of seconds a mouse is on screen and displays it
-frameCount = float(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-secondsCount = float(frameCount / 30)
-contourCount = float(contourCount / 30)
+#frameCount = float(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+#secondsCount = float(frameCount / 30)
+#contourCount = float(contourCount / 30)
 
-print( "The number of seconds there is a moving mouse on screen is " + 
-      str(secondsCount - (secondsCount - contourCount)) + " seconds")
+#print( "The number of seconds there is a moving mouse on screen is " + 
+      #str(secondsCount - (secondsCount - contourCount)) + " seconds")
 
 #closes the feed and the output video file
 cap.release()
